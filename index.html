@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tiệm Trà Sữa Hạnh Phúc — Prototype 0.1</title>
+<style>
+:root{--pink:#ff7e9d;--cream:#fff8ee;--brown:#6b4b3e;--mint:#b9ead8;--yellow:#ffd96a}
+*{box-sizing:border-box}body{margin:0;background:#f8e7db;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--brown)}
+button,input{font:inherit}.app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.card{width:min(100%,980px);background:var(--cream);border:4px solid #fff;box-shadow:0 12px 35px #8f665044;border-radius:28px;overflow:hidden}
+.top{padding:18px 22px;background:#ffdfe7;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:900;font-size:clamp(22px,4vw,34px);letter-spacing:.5px}.stats{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#fff;border-radius:999px;padding:8px 12px;font-weight:800}
+.screen{padding:28px}.menu{text-align:center;padding:35px 10px}.logo{font-size:74px}.title{font-size:clamp(32px,7vw,58px);font-weight:1000;line-height:1.05;margin:5px 0}.sub{opacity:.75;margin-bottom:26px}
+.btn{border:0;border-radius:16px;padding:13px 18px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #c95e78;background:var(--pink);color:white;margin:5px}.btn.alt{background:#fff;color:var(--brown);box-shadow:0 4px 0 #d9c5b9}.btn.green{background:#72cfae;box-shadow:0 4px 0 #459d7e}.btn:active{transform:translateY(3px);box-shadow:none}
+.panel{background:#fff;border-radius:20px;padding:20px;margin:10px 0}.code{font-size:30px;font-weight:1000;letter-spacing:7px;background:#fff4b7;padding:12px;border-radius:14px;display:inline-block}
+.hidden{display:none!important}.gamegrid{display:grid;grid-template-columns:1fr 1.15fr;gap:16px}.customer{min-height:310px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffeef2;border-radius:22px;padding:18px}.face{font-size:92px}.bubble{background:white;border-radius:18px;padding:14px 18px;max-width:430px;text-align:center;font-weight:800}
+.section-title{font-size:20px;font-weight:1000;margin-bottom:10px}.choices{display:flex;flex-wrap:wrap;gap:8px}.choice{border:2px solid #ead6cc;background:#fff;border-radius:14px;padding:10px 12px;cursor:pointer;font-weight:800}.choice.selected{border-color:var(--pink);background:#ffe1e8}.order{background:#fff8c9;border-radius:15px;padding:12px;margin-bottom:12px}.progress{height:13px;background:#eadfd8;border-radius:20px;overflow:hidden}.bar{height:100%;background:#72cfae;width:0;transition:.2s}
+.notice{padding:12px;border-radius:14px;background:#edf8f3;margin-top:10px;font-weight:700}.danger{background:#ffe2e2}.center{text-align:center}
+@media(max-width:720px){.gamegrid{grid-template-columns:1fr}.screen{padding:16px}.customer{min-height:230px}.face{font-size:70px}.code{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="app"><div class="card">
+<header class="top">
+  <div class="brand">🧋 Tiệm Trà Sữa Hạnh Phúc</div>
+  <div class="stats hidden" id="stats">
+    <span class="pill">💰 <span id="money">0</span>đ</span>
+    <span class="pill">📅 Ngày <span id="day">1</span></span>
+    <span class="pill">⭐ <span id="rating">5.0</span></span>
+  </div>
+</header>
+<main class="screen">
+
+<section id="home" class="menu">
+  <div class="logo">🧋</div><div class="title">Tiệm Trà Sữa<br>Hạnh Phúc</div>
+  <div class="sub">Prototype 0.1 • Bản thử nghiệm</div>
+  <button class="btn" onclick="newGame()">🧋 CHƠI MỚI</button>
+  <button class="btn alt" onclick="showLoad()">🔑 NHẬP MÃ TIẾN TRÌNH</button>
+  <button class="btn alt" onclick="showHelp()">❓ HƯỚNG DẪN</button>
+</section>
+
+<section id="codeScreen" class="hidden center">
+  <div class="panel">
+    <h2>🔐 Mã tiến trình của bạn</h2>
+    <p>Hãy lưu mã này. Prototype hiện lưu dữ liệu trên trình duyệt; bản sau sẽ kết nối database để dùng mã trên thiết bị khác.</p>
+    <div class="code" id="codeView"></div><br>
+    <button class="btn" onclick="copyCode()">📋 SAO CHÉP MÃ</button>
+    <button class="btn green" onclick="startGame()">🧋 BẮT ĐẦU KINH DOANH</button>
+  </div>
+</section>
+
+<section id="loadScreen" class="hidden center">
+  <div class="panel">
+    <h2>🔑 Khôi phục tiến trình</h2>
+    <input id="loadCode" maxlength="8" placeholder="8 ký tự" style="padding:13px;border:2px solid #ead6cc;border-radius:14px;text-transform:uppercase;width:min(100%,300px);text-align:center;letter-spacing:4px">
+    <br><button class="btn green" onclick="loadGame()">KHÔI PHỤC</button>
+    <button class="btn alt" onclick="goHome()">QUAY LẠI</button>
+    <div id="loadMsg"></div>
+  </div>
+</section>
+
+<section id="helpScreen" class="hidden">
+ <div class="panel"><h2>❓ Cách chơi</h2>
+ <p>1. Đọc yêu cầu của khách.</p><p>2. Chọn trà, đường, đá và topping.</p><p>3. Bấm pha → đóng gói → giao khách.</p><p>4. Đúng đơn sẽ nhận tiền và đánh giá.</p><p>5. Game tự lưu sau mỗi đơn.</p>
+ <button class="btn alt" onclick="goHome()">QUAY LẠI</button></div>
+</section>
+
+<section id="game" class="hidden">
+ <div class="gamegrid">
+  <div class="customer">
+   <div class="face" id="face">👩🏻</div>
+   <div class="bubble" id="speech">Xin chào! Cho mình một ly nhé.</div>
+  </div>
+  <div>
+   <div class="panel">
+    <div class="section-title">📋 Đơn hàng</div>
+    <div class="order" id="order"></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div id="actionMsg" class="notice">Hãy chọn đủ nguyên liệu.</div>
+   </div>
+   <div class="panel">
+    <div class="section-title">🍵 Trà</div><div class="choices" id="tea"></div>
+    <div class="section-title">🍯 Đường</div><div class="choices" id="sugar"></div>
+    <div class="section-title">🧊 Đá</div><div class="choices" id="ice"></div>
+    <div class="section-title">⚫ Topping</div><div class="choices" id="topping"></div>
+    <button class="btn green" onclick="makeDrink()">🧋 PHA TRÀ SỮA</button>
+    <button class="btn" onclick="serve()">🤲 ĐÓNG GÓI & GIAO KHÁCH</button>
+   </div>
+  </div>
+ </div>
+</section>
+</main></div></div>
+
+<script>
+const KEY='happiness_milk_tea_proto';
+const teas=['Trà đen','Trà xanh','Ô long'], sugars=['0%','30%','50%','70%','100%'], ices=['Không đá','Ít đá','Bình thường','Nhiều đá'], toppings=['Không topping','Trân châu đen','Trân châu trắng','Thạch','Kem cheese'];
+let state=null, order=null, currentCode='';
+
+function code(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<8;i++)s+=chars[Math.floor(Math.random()*chars.length)];return s}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function randomOrder(){return {tea:teas[Math.floor(Math.random()*teas.length)],sugar:sugars[Math.floor(Math.random()*sugars.length)],ice:ices[Math.floor(Math.random()*ices.length)],topping:toppings[Math.floor(Math.random()*toppings.length)],price:25000+Math.floor(Math.random()*4)*5000}}
+function hideAll(){['home','codeScreen','loadScreen','helpScreen','game'].forEach(x=>document.getElementById(x).classList.add('hidden'))}
+function goHome(){hideAll();document.getElementById('home').classList.remove('hidden');document.getElementById('stats').classList.add('hidden')}
+function newGame(){currentCode=code();state={code:currentCode,money:0,day:1,rating:5,sold:0};save();document.getElementById('codeView').textContent=currentCode;hideAll();document.getElementById('codeScreen').classList.remove('hidden')}
+function startGame(){hideAll();document.getElementById('game').classList.remove('hidden');document.getElementById('stats').classList.remove('hidden');newOrder();render()}
+function showLoad(){hideAll();document.getElementById('loadScreen').classList.remove('hidden')}
+function showHelp(){hideAll();document.getElementById('helpScreen').classList.remove('hidden')}
+function loadGame(){let c=document.getElementById('loadCode').value.trim().toUpperCase();let raw=localStorage.getItem(KEY);if(!/^[A-Z2-9]{8}$/.test(c)){msg('Mã phải gồm 8 ký tự.','danger');return}if(raw){let s=JSON.parse(raw);if(s.code===c){state=s;currentCode=c;startGame();return}}msg('Prototype hiện chỉ khôi phục được mã đã tạo trên trình duyệt này. Bản database online sẽ được tích hợp ở bước sau.','danger')}
+function msg(t,cl=''){let e=document.getElementById('loadMsg');e.className='notice '+cl;e.textContent=t}
+function copyCode(){navigator.clipboard?.writeText(currentCode);alert('Đã sao chép mã: '+currentCode)}
+function newOrder(){order=randomOrder();document.getElementById('face').textContent=['👩🏻','👨🏻','👩🏼','👨🏽','🧑🏻'][Math.floor(Math.random()*5)];document.getElementById('speech').textContent=`Cho mình trà sữa ${order.tea}, ${order.sugar} đường, ${order.ice}, ${order.topping}.`;renderOrder();resetChoices()}
+function renderOrder(){document.getElementById('order').innerHTML=`<b>🧋 Trà sữa</b><br>${order.tea} • ${order.sugar} đường • ${order.ice} • ${order.topping}<br><b>Giá dự kiến: ${order.price.toLocaleString('vi-VN')}đ</b>`}
+function makeChoices(id,arr){document.getElementById(id).innerHTML=arr.map(x=>`<button class="choice" data-group="${id}" onclick="pick(this,'${x}')">${x}</button>`).join('')}
+function resetChoices(){['tea','sugar','ice','topping'].forEach(id=>{let arr={tea:teas,sugar:sugars,ice:ices,topping:toppings}[id];makeChoices(id,arr)});document.getElementById('bar').style.width='0';document.getElementById('actionMsg').textContent='Hãy chọn đủ nguyên liệu.'}
+let picks={};
+function pick(el,val){document.querySelectorAll(`[data-group="${el.dataset.group}"]`).forEach(x=>x.classList.remove('selected'));el.classList.add('selected');picks[el.dataset.group]=val;document.getElementById('bar').style.width=(Object.keys(picks).length*25)+'%'}
+function makeDrink(){if(Object.keys(picks).length<4){document.getElementById('actionMsg').textContent='⚠️ Bạn chưa chọn đủ nguyên liệu.';return}let ok=picks.tea===order.tea&&picks.sugar===order.sugar&&picks.ice===order.ice&&picks.topping===order.topping;window.drinkOK=ok;document.getElementById('actionMsg').textContent=ok?'✅ Pha đúng công thức! Bây giờ đóng gói và giao khách.':'⚠️ Công thức chưa đúng. Bạn vẫn có thể giao, nhưng khách sẽ không hài lòng.';document.getElementById('bar').style.width='75%'}
+function serve(){if(!window.drinkOK && Object.keys(picks).length<4){document.getElementById('actionMsg').textContent='⚠️ Hãy pha đủ nguyên liệu trước.';return}let ok=!!window.drinkOK;state.money+=(ok?order.price:Math.floor(order.price*.5));state.sold++;state.rating=Math.max(1,Math.min(5,+(state.rating+(ok?.05:-.15)).toFixed(2)));if(state.sold%5===0)state.day++;save();render();document.getElementById('actionMsg').textContent=ok?'🎉 Khách rất hài lòng! Đã nhận tiền.':'😅 Khách nhận hàng nhưng có vẻ chưa vui. Đã nhận một phần tiền.';setTimeout(()=>{window.drinkOK=false;newOrder();render()},900)}
+function render(){document.getElementById('money').textContent=state.money.toLocaleString('vi-VN');document.getElementById('day').textContent=state.day;document.getElementById('rating').textContent=state.rating.toFixed(2)}
+</script>
+</body>
+</html>
